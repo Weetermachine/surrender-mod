@@ -1,14 +1,11 @@
--- Server_AdvanceTurn.lua (CRASH DIAGNOSTIC VERSION)
--- Only crashes when a surrender is detected, so normal turns advance fine.
--- Read the crash message in Mod Development Console after surrendering.
+-- Server_AdvanceTurn.lua (CRASH DIAGNOSTIC VERSION 3)
+-- Only crashes when a SurrenderAccepted transition is actually detected.
 
 _SRMod_transfers = {}
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
     _SRMod_transfers = {}
 
-    -- Check for any player who has surrendered via Surrendered flag or state
-    -- as a broad net, then report everything we know
     local surrenderFound = false
     local playerInfo = ''
     for _, p in pairs(game.Players) do
@@ -22,7 +19,6 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
         end
     end
 
-    -- Also check PendingStateTransitions
     local pstInfo = 'PST='
     if game.PendingStateTransitions == nil then
         pstInfo = pstInfo .. 'NIL'
@@ -40,7 +36,6 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
     end
 
     if surrenderFound then
-        -- Count territories per surrendering player in the standing
         local standing = game.LatestTurnStanding
         local terrInfo = ''
         for _, p in pairs(game.Players) do
@@ -52,7 +47,6 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
                 terrInfo = terrInfo .. '[pid=' .. tostring(p.ID) .. '_owns=' .. count .. ']'
             end
         end
-        -- Also check PendingStateTransitions players
         if game.PendingStateTransitions ~= nil then
             for _, t in ipairs(game.PendingStateTransitions) do
                 if t.NewState == WL.GamePlayerState.SurrenderAccepted then
@@ -74,14 +68,13 @@ end
 
 function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNewOrder)
     if order.proxyType ~= 'GameOrderStateTransition' then return end
+    -- Only crash if this is specifically a SurrenderAccepted transition
+    if order.NewState ~= WL.GamePlayerState.SurrenderAccepted then return end
 
-    -- Crash with details any time we see any state transition, so we can
-    -- compare the state value to SurrenderAccepted
-    error('SR_DIAG_ORDER | StateTransition: pid=' .. tostring(order.PlayerID)
+    error('SR_DIAG_ORDER | SurrenderAccepted transition: pid=' .. tostring(order.PlayerID)
           .. ' newState=' .. tostring(order.NewState)
-          .. ' SurrenderAccepted=' .. tostring(WL.GamePlayerState.SurrenderAccepted))
+          .. ' SURRENDER_ENUM=' .. tostring(WL.GamePlayerState.SurrenderAccepted))
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
-    -- No-op; we only care about _Start and _Order for diagnosis
 end
