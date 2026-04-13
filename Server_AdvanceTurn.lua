@@ -7,6 +7,21 @@
 -- Helpers
 -----------------------------------------------------------------------
 
+-- Returns whether the game has actual teams configured.
+-- In a no-teams game, every player has the same team ID (0), so we
+-- must detect this and treat it as "no teammates".
+local function gameHasTeams(players)
+    local firstTeam = nil
+    for _, player in pairs(players) do
+        if firstTeam == nil then
+            firstTeam = player.Team
+        elseif player.Team ~= firstTeam then
+            return true  -- at least two different team IDs = teams are configured
+        end
+    end
+    return false  -- everyone on the same team = no teams
+end
+
 local function getAliveTeammates(players, surrenderingPlayerID, surrenderingTeam)
     local teammates = {}
     for _, player in pairs(players) do
@@ -73,6 +88,9 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
     -- PreviousTurnStanding still has the surrendering player's territories
     -- because Warzone hasn't neutralized them yet relative to that snapshot.
     local prevStanding = sg.PreviousTurnStanding
+
+    -- If the game has no teams, do nothing regardless of surrenders
+    if not gameHasTeams(players) then return end
 
     for _, player in pairs(players) do
         if player.Surrendered == true then
