@@ -1,0 +1,20 @@
+Surrender Redistribute
+======================
+When a player surrenders, their territories are automatically transferred to a teammate instead of turning neutral. This keeps the team competitive even when a player has to leave the game, and prevents surrenders from punching a hole in your team's defenses.
+
+If the surrendering player has no teammates, or is playing in a game without teams, the mod does nothing and territories turn neutral as normal.
+
+Transfer modes
+--------------
+When setting up the game, the host can choose how the recipient teammate is selected:
+
+- Highest Income Teammate: territories go to whichever teammate currently earns the most armies per turn. Good for snowballing a strong player even further.
+- Lowest Income Teammate: territories go to whichever teammate currently earns the fewest armies per turn. Good for keeping the team balanced and propping up a weaker player.
+- Random Teammate: territories go to a randomly selected teammate each time. Good for unpredictability or when all teammates are roughly equal.
+
+Tips
+----
+- In longer games, consider setting the mode to Lowest Income so a surrendering player's territories shore up your weakest link rather than padding the strongest.
+- The transfer happens at the end of the turn in which the surrender is processed, so the surrendering player's orders for that turn still execute first.
+- This mod works in any team configuration — 2v2, 3v3, uneven teams, and so on.
+- In free-for-all games with no teams, this mod has no effect.
